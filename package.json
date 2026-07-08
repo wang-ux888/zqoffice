@@ -1,0 +1,20 @@
+{
+  "name": "zqoffice-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ZQOffice: Office document conversion & editing engine with MCP/REST API",
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:bridge": "pnpm --filter @zqoffice/bridge build",
+    "build:mcp": "pnpm --filter @zqoffice/mcp-server build",
+    "build:server": "pnpm --filter @zqoffice/server build",
+    "start:mcp": "pnpm --filter @zqoffice/mcp-server start",
+    "start:server": "pnpm --filter @zqoffice/server start",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

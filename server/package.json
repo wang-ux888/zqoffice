@@ -1,0 +1,25 @@
+{
+  "name": "@zqoffice/server",
+  "version": "1.0.0",
+  "description": "ZQOffice REST API Server — HTTP interface for Office document processing",
+  "main": "dist/index.js",
+  "bin": {
+    "zqoffice-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@zqoffice/bridge": "workspace:*",
+    "fastify": "^5.0.0",
+    "@fastify/cors": "^11.0.0",
+    "@fastify/multipart": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

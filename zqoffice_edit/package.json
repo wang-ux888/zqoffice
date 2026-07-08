@@ -1,0 +1,13 @@
+{
+  "name": "@zqoffice/edit",
+  "version": "1.0.0",
+  "description": "ZQOffice edit engine — TypeScript spreadsheet/doc/slide editors",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

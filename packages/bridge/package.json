@@ -1,0 +1,18 @@
+{
+  "name": "@zqoffice/bridge",
+  "version": "1.0.0",
+  "description": "ZQOffice bridge layer — connects twc (C++ engine) with edit (TypeScript editor)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "zqoffice": "file:../../zqoffice_twc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZQ Doc 编辑器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #f5f5f7;
+      font-family: -apple-system, "Microsoft YaHei", "Segoe UI", sans-serif;
+      font-size: 13px;
+      color: #333;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #666;
+      font-size: 14px;
+    }
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 8px;
+      border: 2px solid #d0d0d0;
+      border-top-color: #4787f5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #d32f2f;
+      font-size: 14px;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .zq-doc-block-selected {
+      outline: 2px solid #4787f5 !important;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading" id="loading">正在加载文档编辑器</div>
+  </div>
+
+  <script type="module">
+    /**
+     * 文档编辑器窗口入口
+     * 由主进程通过 loadFile 加载
+     * 通过 URL query 参数传递文件路径: doc-editor.html?file=xxx.docx
+     */
+    import { DocEditorEngine } from './doc-editor-engine.js';
+
+    const loadingEl = document.getElementById('loading');
+    const appEl = document.getElementById('app');
+
+    // 从 URL 获取文件路径
+    const params = new URLSearchParams(window.location.search);
+    const filePath = params.get('file') || '';
+    const fileName = filePath ? filePath.split(/[\\/]/).pop() : '新建文档';
+
+    // 通过 preload 暴露的 API 加载和保存文件
+    // window.nexusAPI 由 preload/index.js 注入
+    const nexusAPI = window.nexusAPI || {};
+
+    // 初始化编辑器
+    async function init() {
+      try {
+        // 创建容器
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.height = '100%';
+        appEl.innerHTML = '';
+        appEl.appendChild(container);
+
+        // 配置
+        const config = {
+          container,
+          fileName,
+          filePath: filePath || undefined,
+          onSave: async (json, path) => {
+            if (nexusAPI.officeSaveDoc) {
+              const result = await nexusAPI.officeSaveDoc(json, path);
+              // 如果保存对话框生成了新路径，更新标题
+              if (result && result.filePath && result.filePath !== path) {
+                document.title = `ZQ Doc - ${result.filePath.split(/[\\/]/).pop()}`;
+              }
+            } else {
+              console.warn('officeSaveDoc API 不可用');
+            }
+          },
+          onContentChange: () => {
+            // 内容变化时可以触发自动保存等
+          },
+          onTitleChange: (title) => {
+            document.title = `ZQ Doc - ${title}`;
+          },
+        };
+
+        // 如果有文件路径, 加载文件
+        if (filePath && nexusAPI.officeLoadDoc) {
+          const json = await nexusAPI.officeLoadDoc(filePath);
+          config.initialData = JSON.parse(json);
+        }
+
+        // 创建引擎
+        const engine = new DocEditorEngine(config);
+
+        // 暴露到全局用于调试
+        window.__docEngine = engine;
+
+        loadingEl.style.display = 'none';
+
+      } catch (err) {
+        console.error('文档编辑器初始化失败:', err);
+        appEl.innerHTML = '';
+        const errorEl = document.createElement('div');
+        errorEl.className = 'error';
+        errorEl.innerHTML = `
+          <div>加载失败</div>
+          <div style="font-size:12px;color:#999">${err.message}</div>
+          <div style="font-size:12px;color:#999;margin-top:8px">
+            文件: ${fileName}
+          </div>
+        `;
+        appEl.appendChild(errorEl);
+      }
+    }
+
+    // 等待 DOM 就绪后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

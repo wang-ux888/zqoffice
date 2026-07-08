@@ -1,0 +1,65 @@
+﻿{
+  "name": "zqoffice",
+  "version": "1.0.0",
+  "description": "ZQOffice: C++ Office document conversion engine (xlsx/xls/csv/pptx/ppt/docx), supporting bidirectional conversion between Office files and JSON format",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "cmake -B build -S . -Dzq_office_BUILD_NODE_API=ON && cmake --build build --config Release",
+    "build:debug": "cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -Dzq_office_BUILD_NODE_API=ON && cmake --build build --config Debug",
+    "rebuild": "npm run clean && npm run build",
+    "clean": "if(Test-Path build) { Remove-Item -Recurse -Force build }",
+    "test": "node tests/node/test_all.js",
+    "test:cpp": "ctest --test-dir build --output-on-failure",
+    "prebuild": "prebuildify --napi-version 8 --strip",
+    "prebuild:install": "prebuild-install"
+  },
+  "binary": {
+    "napi_versions": [8],
+    "package_name": "zqoffice-{platform}-{arch}.tar.gz",
+    "host": "https://github.com/zqoffice/zqoffice/releases/download/v{version}"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "CMakeLists.txt",
+    "include/",
+    "src/",
+    "tests/node/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "office",
+    "ooxml",
+    "xlsx",
+    "pptx",
+    "docx",
+    "excel",
+    "powerpoint",
+    "word",
+    "office-conversion",
+    "json",
+    "native",
+    "node-addon",
+    "napi"
+  ],
+  "author": "ZQOffice",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "prebuildify": "^6.0.1",
+    "prebuild-install": "^7.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

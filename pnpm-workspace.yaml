@@ -1,0 +1,6 @@
+packages:
+  - 'packages/*'
+  - 'mcp-server'
+  - 'server'
+  - 'zqoffice_twc'
+  - 'zqoffice_edit'
